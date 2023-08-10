@@ -1,70 +1,64 @@
 package com.javarush.island.lazarev.entities;
+import com.javarush.island.lazarev.factory.EntityFactory;
+import com.javarush.island.lazarev.location.Coordinates;
+import com.javarush.island.lazarev.location.Island;
+import com.javarush.island.lazarev.location.Location;
+import com.javarush.island.lazarev.repository.NatureParameters;
+import com.javarush.island.lazarev.repository.ParametersIsland;
+import com.javarush.island.lazarev.repository.ProbabilityTable;
 
 
-public abstract class Animal extends Nature {
-    private FoodType foodType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
-    private int moveSpeed;
-    private double foodNeeded;
-    private double probabilityToFindFood;
+import static com.javarush.island.lazarev.repository.ParametersIsland.REQUIRED_POPULATION_FOR_REPRODUCTION;
 
-    public Animal(TileIcon tileIcon, double weight, double probabilityToBeEaten, FoodType foodType, int moveSpeed, double foodNeeded, double probabilityToFindFood) {
-        super(tileIcon, weight, probabilityToBeEaten);
-        this.foodType = foodType;
-        this.moveSpeed = moveSpeed;
-        this.foodNeeded = foodNeeded;
-        this.probabilityToFindFood = probabilityToFindFood;
+public abstract class Animal extends Nature{
+
+    public Animal(TileIcon iconType, NatureParameters natureParameters, Coordinates coordinates, Location location,
+                  ProbabilityTable probabilityTable, Island island) {
+        super(iconType, natureParameters, coordinates, location, probabilityTable, island);
     }
 
-    public FoodType getFoodType() {
-        return foodType;
+    public void setCurrentCoordinates(Coordinates newCoordinates) {
+        this.coordinates = newCoordinates;
     }
 
-    public int getMoveSpeed() {
-        return moveSpeed;
-    }
 
-    public void setMoveSpeed(int moveSpeed) {
-        this.moveSpeed = moveSpeed;
-    }
+    public synchronized void move() {
+        if (!isAlive()) {
+            return;
+        }
+        if (natureParameters.getSpeed() > 0) {
+            int newX = getCoordinates().x() + ThreadLocalRandom.current().nextInt(natureParameters.getSpeed());
+            int newY = getCoordinates().y() + ThreadLocalRandom.current().nextInt(natureParameters.getSpeed());
 
-    public double getFoodNeeded() {
-        return foodNeeded;
-    }
+            newX = Math.max(0, Math.min(newX, ParametersIsland.ISLAND_ROWS - 1));
+            newY = Math.max(0, Math.min(newY, ParametersIsland.ISLAND_COLS - 1));
 
-    public void setFoodNeeded(double foodNeeded) {
-        this.foodNeeded = foodNeeded;
-    }
-
-    public double getProbabilityToFindFood() {
-        return probabilityToFindFood;
-    }
-
-    public void setProbabilityToFindFood(double probabilityToFindFood) {
-        this.probabilityToFindFood = probabilityToFindFood;
-    }
-
-    public abstract void moveUp();
-
-    public abstract void moveDown();
-
-    public abstract void moveLeft();
-
-    public abstract void moveRight();
-
-    public void eat(Nature food) {
-        if (food.getType() == foodType) {
-            double foodWeight = food.getWeight();
-            if (foodWeight >= foodNeeded) {
-                System.out.println("Animal is eating.");
-                setWeight(getWeight() + foodNeeded);
-            } else {
-                System.out.println("Not enough food for the animal.");
-            }
-        } else {
-            System.out.println("Animal cannot eat this type of food.");
+            Coordinates newCoordinates = new Coordinates(newX, newY);
+            setCurrentCoordinates(newCoordinates);
         }
     }
 
-}
+
+
+    public EntityType getEntityType() {
+        return super.getEntityType();
+    }
+    public synchronized void reproduceIfPossible(Location location) {
+        List<Nature> entitiesInCellCopy = new ArrayList<>(location.getEntitiesAt(coordinates));
+
+
+        if (entitiesInCellCopy.size() >= REQUIRED_POPULATION_FOR_REPRODUCTION ) {
+            EntityType entityType = EntityType.valueOf(this.getClass().getSimpleName().toUpperCase());
+            Nature offspring = EntityFactory.createOffspring(entityType, coordinates, location, probabilityTable, island);
+            location.addEntity(offspring);
+        }
+    }
+    }
+
+
+
 

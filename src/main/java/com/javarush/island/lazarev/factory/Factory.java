@@ -1,10 +1,9 @@
 package com.javarush.island.lazarev.factory;
-import com.javarush.island.lazarev.entities.Animal;
-import com.javarush.island.lazarev.entities.plant.Plant;
+
+import com.javarush.island.lazarev.entities.Nature;
+import com.javarush.island.lazarev.repository.NatureParameters;
 
 
 public interface Factory {
-    Animal createPredator();
-    Animal createHerbivores();
-    Plant createPlant();
+  Nature create (NatureParameters parameters);
 }

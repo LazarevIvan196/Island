@@ -1,10 +1,8 @@
 package com.javarush.island.lazarev.view;
 
-import com.javarush.island.lazarev.entities.Nature;
+import com.javarush.island.lazarev.location.Location;
 
-
-import java.util.List;
 
 public interface View {
-    void displayIsland(List<Nature>[][] grid);
+    void displayIsland(Location[][] locations);
 }

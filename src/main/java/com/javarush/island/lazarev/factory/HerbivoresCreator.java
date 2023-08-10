@@ -1,43 +1,44 @@
 package com.javarush.island.lazarev.factory;
-import com.javarush.island.lazarev.entities.Animal;
-import com.javarush.island.lazarev.entities.FoodType;
+
+import com.javarush.island.lazarev.entities.EntityType;
+import com.javarush.island.lazarev.entities.Nature;
 import com.javarush.island.lazarev.entities.TileIcon;
 import com.javarush.island.lazarev.entities.herbivores.*;
-import com.javarush.island.lazarev.entities.plant.Plant;
-
+import com.javarush.island.lazarev.location.Coordinates;
+import com.javarush.island.lazarev.location.Island;
+import com.javarush.island.lazarev.location.Location;
+import com.javarush.island.lazarev.repository.NatureParameters;
+import com.javarush.island.lazarev.repository.ProbabilityTable;
 
 public class HerbivoresCreator implements Factory {
-    private final Herbivores herbivoresType;
+    private final EntityType entityType;
+    private final Coordinates coordinates;
+    private final Location location;
+    private final ProbabilityTable probabilityTable;
+    private final Island island;
 
-    public HerbivoresCreator(Herbivores herbivoresType) {
-        this.herbivoresType = herbivoresType;
+    public HerbivoresCreator(EntityType entityType, Coordinates coordinates, Location location, ProbabilityTable probabilityTable, Island island) {
+        this.entityType = entityType;
+        this.coordinates = coordinates;
+        this.location = location;
+        this.probabilityTable = probabilityTable;
+        this.island = island;
     }
 
-
     @Override
-    public Animal createHerbivores() {
-        return switch (herbivoresType) {
-            case BEE -> new Bee(TileIcon.BEE,0.01, 5, FoodType.MEAT,20, 0, 0 );
-            case BOAR -> new Boar(TileIcon.BOAR,400, 2, FoodType.MEAT,50, 70, 50);
-            case DEER -> new Deer(TileIcon.DEER,300, 4, FoodType.MEAT,15, 70, 50);
-            case DUCK -> new Duck(TileIcon.DUCK,1, 4, FoodType.MEAT,10, 90, 0.15);
-            case HARE -> new Hare(TileIcon.HARE,7, 3, FoodType.MEAT,50, 80, 2);
-            case MOUSE -> new Mouse(TileIcon.MOUSE,0.05, 1, FoodType.MEAT,60, 70, 0.01);
-            case SHEEP -> new Sheep(TileIcon.SHEEP,70, 3, FoodType.MEAT,40, 100, 30);
-            case RABBIT -> new Rabbit(TileIcon.RABBIT,2, 2, FoodType.MEAT,50, 80, 0.45);
-            case BEAVER -> new Beaver(TileIcon.BEAVER,2, 2, FoodType.MEAT,40, 90, 0.45);
-            case CATERPILLAR -> new Caterpillar(TileIcon.CATERPILLAR,0.1, 0, FoodType.MEAT,60, 0, 0);
+    public Nature create(NatureParameters parameters) {
+        return switch (entityType) {
+            case BEE -> new Bee(TileIcon.BEE, parameters, coordinates, location, probabilityTable, island);
+            case BOAR -> new Boar(TileIcon.BOAR, parameters, coordinates, location, probabilityTable,island);
+            case DEER -> new Deer(TileIcon.DEER, parameters, coordinates, location, probabilityTable,island);
+            case DUCK -> new Duck(TileIcon.DUCK, parameters, coordinates, location, probabilityTable,island);
+            case HARE -> new Hare(TileIcon.HARE, parameters, coordinates, location, probabilityTable,island);
+            case MOUSE -> new Mouse(TileIcon.MOUSE, parameters, coordinates, location, probabilityTable,island);
+            case SHEEP -> new Sheep(TileIcon.SHEEP, parameters, coordinates, location, probabilityTable,island);
+            case RABBIT -> new Rabbit(TileIcon.RABBIT, parameters, coordinates, location, probabilityTable,island);
+            case BEAVER -> new Beaver(TileIcon.BEAVER, parameters, coordinates, location, probabilityTable,island);
+            case CATERPILLAR -> new Caterpillar(TileIcon.CATERPILLAR, parameters, coordinates, location, probabilityTable,island);
+            default -> throw new IllegalArgumentException("Unknown entity type: " + entityType);
         };
     }
-
-    @Override
-    public Animal createPredator() {
-        throw new UnsupportedOperationException("HerbivoresCreator не поддерживает создание хищников.");
-    }
-
-    @Override
-    public Plant createPlant() {
-        throw new UnsupportedOperationException("HerbivoresCreator не поддерживает создание растений.");
-    }
-
 }

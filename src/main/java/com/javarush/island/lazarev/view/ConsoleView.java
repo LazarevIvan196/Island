@@ -1,19 +1,21 @@
 package com.javarush.island.lazarev.view;
 
 import com.javarush.island.lazarev.entities.Nature;
+import com.javarush.island.lazarev.location.Location;
+
 import java.util.List;
 
 public class ConsoleView implements View {
 
     @Override
-    public void displayIsland(List<Nature>[][] grid) {
+    public void displayIsland(Location[][] locations) {
         System.out.println("Содержимое острова:");
 
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[i].length; j++) {
-                List<Nature> cellContents = grid[i][j];
+        for (Location[] locationRow : locations) {
+            for (Location location : locationRow) {
+                List<Nature> cellContents = location.getEntities();
                 if (cellContents.isEmpty()) {
-                    System.out.print("  .  "); // Пустая плитка
+                    System.out.print("  .  ");
                 } else {
                     Nature lastEntity = cellContents.get(cellContents.size() - 1);
                     System.out.print(" " + lastEntity.getIconType().getIcon() + " ");

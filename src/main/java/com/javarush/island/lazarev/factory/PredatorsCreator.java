@@ -1,52 +1,41 @@
 package com.javarush.island.lazarev.factory;
 
-import com.javarush.island.lazarev.entities.Animal;
-import com.javarush.island.lazarev.entities.FoodType;
+import com.javarush.island.lazarev.entities.EntityType;
+import com.javarush.island.lazarev.entities.Nature;
 import com.javarush.island.lazarev.entities.TileIcon;
-import com.javarush.island.lazarev.entities.plant.Plant;
 import com.javarush.island.lazarev.entities.predators.*;
+import com.javarush.island.lazarev.location.Coordinates;
+import com.javarush.island.lazarev.location.Island;
+import com.javarush.island.lazarev.location.Location;
+import com.javarush.island.lazarev.repository.NatureParameters;
+import com.javarush.island.lazarev.repository.ProbabilityTable;
 
-/**
- * Фабрика для создания объектов хищников.
- */
+
 public class PredatorsCreator implements Factory {
-    private final Predators predatorsType;
+    private final EntityType entityType;
+    private final Coordinates coordinates;
+    private final Location location;
+    private final ProbabilityTable probabilityTable;
+    private final Island island;
 
-    /**
-     * Конструктор фабрики хищников.
-     *
-     * @param predatorsType тип хищника.
-     */
-    public PredatorsCreator(Predators predatorsType) {
-        this.predatorsType = predatorsType;
+    public PredatorsCreator(EntityType entityType, Coordinates coordinates, Location location, ProbabilityTable probabilityTable, Island island) {
+        this.entityType = entityType;
+        this.coordinates = coordinates;
+        this.location = location;
+        this.probabilityTable = probabilityTable;
+        this.island = island;
     }
 
-    /**
-     * Создает экземпляр хищника в зависимости от типа.
-     *
-     * @return объект хищника.
-     * @throws IllegalArgumentException если тип хищника неизвестен.
-     */
     @Override
-    public Animal createPredator() {
-        return switch (predatorsType) {
-            case BEAR -> new Bear(TileIcon.BEAR,500, 2, FoodType.MEAT, 0, 60, 80);
-            case EAGLE -> new Eagle(TileIcon.EAGLE,6, 3,FoodType.MEAT,  0, 80, 1);
-            case FOX -> new Fox(TileIcon.FOX,8, 2, FoodType.MEAT,20,  60, 2);
-            case TIGER -> new Tiger(TileIcon.TIGER,600, 3, FoodType.MEAT, 0, 65, 80);
-            case WOLF -> new Wolf(TileIcon.WOLF,50, 3, FoodType.MEAT, 10, 60, 8);
-            default -> throw new IllegalArgumentException("Unknown predators type: " + predatorsType);
+    public Nature create(NatureParameters parameters) {
+        return switch (entityType) {
+            case BEAR -> new Bear(TileIcon.BEAR, parameters, coordinates, location, probabilityTable,island);
+            case EAGLE -> new Eagle(TileIcon.EAGLE, parameters, coordinates, location, probabilityTable,island);
+            case FOX -> new Fox(TileIcon.FOX, parameters, coordinates, location, probabilityTable,island);
+            case TIGER -> new Tiger(TileIcon.TIGER, parameters, coordinates, location, probabilityTable,island);
+            case WOLF -> new Wolf(TileIcon.WOLF, parameters, coordinates, location, probabilityTable,island);
+            default -> throw new IllegalArgumentException("Unknown entity type: " + entityType);
         };
-    }
-
-    @Override
-    public Animal createHerbivores() {
-        throw new UnsupportedOperationException("PlantCreator не поддерживает создание травоядных.");
-    }
-
-    @Override
-    public Plant createPlant() {
-        throw new UnsupportedOperationException("HerbivoresCreator не поддерживает создание растений.");
     }
 }
 

@@ -1,36 +1,38 @@
 package com.javarush.island.lazarev.factory;
 
-import com.javarush.island.lazarev.entities.Animal;
-import com.javarush.island.lazarev.entities.FoodType;
+import com.javarush.island.lazarev.entities.EntityType;
+import com.javarush.island.lazarev.entities.Nature;
 import com.javarush.island.lazarev.entities.TileIcon;
 import com.javarush.island.lazarev.entities.plant.Grass;
-import com.javarush.island.lazarev.entities.plant.Plant;
-import com.javarush.island.lazarev.entities.plant.Plants;
 import com.javarush.island.lazarev.entities.plant.Woods;
+import com.javarush.island.lazarev.location.Coordinates;
+import com.javarush.island.lazarev.location.Island;
+import com.javarush.island.lazarev.location.Location;
+import com.javarush.island.lazarev.repository.NatureParameters;
+import com.javarush.island.lazarev.repository.ProbabilityTable;
 
 public class PlantCreator implements Factory {
-    private final Plants plantType;
+    private final EntityType entityType;
+    private final Coordinates coordinates;
+    private final Location location;
+    private final ProbabilityTable probabilityTable;
+    private final Island island;
 
-    public PlantCreator(Plants plantType) {
-        this.plantType = plantType;
+    public PlantCreator(EntityType entityType, Coordinates coordinates, Location
+            location,ProbabilityTable probabilityTable, Island island) {
+        this.entityType = entityType;
+        this.coordinates = coordinates;
+        this.location = location;
+        this.island = island;
+        this.probabilityTable = probabilityTable;
     }
 
-
     @Override
-    public Plant createPlant() {
-        return switch (plantType) {
-            case WOOD -> new Woods(TileIcon.WOODS,30, 2000, FoodType.PLANT);
-            case GRAS -> new Grass(TileIcon.GRASS,50, 1,FoodType.PLANT);
+    public Nature create(NatureParameters parameters) {
+        return switch (entityType) {
+            case WOODS -> new Woods(TileIcon.WOODS, parameters, coordinates, location,probabilityTable, island);
+            case GRASS -> new Grass(TileIcon.GRASS, parameters, coordinates, location,probabilityTable, island);
+            default -> throw new IllegalArgumentException("Unknown entity type: " + entityType);
         };
-    }
-
-    @Override
-    public Animal createPredator() {
-        throw new UnsupportedOperationException("PlantCreator не поддерживает создание хищников.");
-    }
-
-    @Override
-    public Animal createHerbivores() {
-        throw new UnsupportedOperationException("PlantCreator не поддерживает создание травоядных.");
     }
 }
